@@ -6,14 +6,17 @@ var whosit;
 //var gamepieces = {};
 var taggable = true;
 var clearTaggable;
+var aBox = { x: 200, y:200 };
 
 function onConnection(socket) {
-	//console.log('Connection received: ' + socket.request.connection.remoteAddress + ":" + socket.request.connection.remotePort);
+	console.log('Connection received: ' + socket.request.connection.remoteAddress + ", port:" + socket.request.connection.remotePort);
 	socket.broadcast.emit('announce', {} )
 
 	if (whosit) {
 		socket.emit('it', { "uuid": whosit } )
 	}
+
+	socket.emit('state', aBox);
 
 	socket.on('move', (data) => {
 		socket.broadcast.emit('moved', data)

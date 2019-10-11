@@ -51,13 +51,14 @@
         let itfilla = '#aa0000';
         let itfillb = '#99ff00';
         var itfill = itfilla;
+        var aBox = { x:0, y:0};
 
         // Decay should be higher than start
         const bounceDecay = 1.05; // 1 or more: the higher, the less bounce; less than one adds infinite spring
         const bounceStart = 1.05; // 1 or more; the higher, the more it should bounce
         
 
-        var socket = io('//:3000') // for localhost testing
+        var socket = io('http://localhost:3000') // for localhost testing
      //var socket = io('https://nightwatch-server.now.sh')
         socket.on('announce', () => {
             //console.log("announce received")
@@ -81,6 +82,10 @@
             }
             let flashIt = setInterval( function() { changeItColor() }, 100);
             setTimeout(function() { clearInterval(flashIt); itfill = itfilla; }, 3000);
+        })
+
+        socket.on('state', (data) => {
+            aBox = data;
         })
 
         socket.on('moved', function (data) {
@@ -383,6 +388,11 @@
                     }
                 }
                 gamePieces[uuid].update(uuid == itUUID,itfill);
+                ctx.fillRect(aBox.x, aBox.y, 50, 50);
+            }
+
+            if (abox) {
+
             }
         }
 
