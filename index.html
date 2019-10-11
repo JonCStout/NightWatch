@@ -51,7 +51,7 @@
         let itfilla = '#aa0000';
         let itfillb = '#99ff00';
         var itfill = itfilla;
-        var aBox = { x:0, y:0};
+        var state;
 
         // Decay should be higher than start
         const bounceDecay = 1.05; // 1 or more: the higher, the less bounce; less than one adds infinite spring
@@ -85,10 +85,10 @@
         })
 
         socket.on('state', (data) => {
-            aBox = data;
+            state = data;
         })
 
-        socket.on('moved', function (data) {
+        socket.on('moved', function (data, inState) {
             //console.log("move received:");
             //console.log(data);
             // This is where we parse the data object for the new box to draw
@@ -100,6 +100,7 @@
             } else {
                 gamePieces[data.uuid] = new component(pieceWidth, pieceHeight, data.color, data.x, data.y, data.speedX, data.speedY);
             }
+            state = inState;
             // socket.emit('moved')
         });
         socket.on('remove', function (data) {
@@ -388,11 +389,8 @@
                     }
                 }
                 gamePieces[uuid].update(uuid == itUUID,itfill);
-                ctx.fillRect(aBox.x, aBox.y, 50, 50);
-            }
-
-            if (abox) {
-
+                ctx.fillStyle = state.aBox.color;
+                ctx.fillRect(state.aBox.x, state.aBox.y, 50, 50);  // draw aBox
             }
         }
 
@@ -473,7 +471,7 @@
             for (var i = 0; i < 6; i++) {
                 color += letters[Math.floor(Math.random() * 16)];
             }
-            return color;
+            return color;  // #abcdef, #123456, #ff00ff
         }
 
         function getRandomInt(max, min) {

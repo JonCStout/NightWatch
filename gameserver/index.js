@@ -6,7 +6,9 @@ var whosit;
 //var gamepieces = {};
 var taggable = true;
 var clearTaggable;
-var aBox = { x: 200, y:200 };
+var state = {
+	aBox: { x: 200, y:200, color: "#0000ff" }  // initial values, #0000ff = blue.  "blue" also works
+};
 
 function onConnection(socket) {
 	console.log('Connection received: ' + socket.request.connection.remoteAddress + ", port:" + socket.request.connection.remotePort);
@@ -16,10 +18,14 @@ function onConnection(socket) {
 		socket.emit('it', { "uuid": whosit } )
 	}
 
-	socket.emit('state', aBox);
+	socket.emit('state', state);  // send initial state
 
-	socket.on('move', (data) => {
-		socket.broadcast.emit('moved', data)
+	socket.on('move', (data) => { // register a callback function for when a move event is received
+		state.aBox.color = data.color;  // change color depending on who sent the move event
+		// socket.emit("state", state);  // update state for this socket (the sender of move)
+		// socket.broadcast.emit("state", state);  // update state for all other sockets
+		socket.broadcast.emit('moved', data, state);
+		socket.emit('moved', data, state);
 		socket.userid = data.uuid;
 		// determine who's it
 		if (!whosit) { 
@@ -28,7 +34,8 @@ function onConnection(socket) {
 			//socket.broadcast.emit('it', { "uuid": whosit } )
 		} 
 	    //console.log('move received: ');
-	    //console.log(data);
+		//console.log(data);
+
 	});
 
 	socket.on('tagged', (data) => {
@@ -43,8 +50,8 @@ function onConnection(socket) {
 	socket.on('disconnect', () => {
 		if (whosit == socket.userid) { whosit = undefined }
 		socket.broadcast.emit('remove', { "uuid" : socket.userid })
-	})
-}
+	});
+};
 
 function getTaggable() {
 	return taggable;
