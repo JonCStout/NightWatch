@@ -16,7 +16,7 @@ const bounceDecay = 1.05; // 1 or more: the higher, the less bounce; less than o
 const bounceStart = 1.05; // 1 or more; the higher, the more it should bounce
 
 
-var socket = io('http://localhost:3000') // for localhost testing
+var socket = io('http://localhost:3000'); // for localhost testing
 //var socket = io('https://nightwatch-server.now.sh')
 socket.on('announce', () => {
     //console.log("announce received")
@@ -29,7 +29,7 @@ socket.on('announce', () => {
         speedY: myGamePiece.speedY,
         color: myColor
     });
-})
+});
 socket.on('it', (data) => {
     //console.log('Got it data: ', data)
     itUUID = data.uuid;
@@ -38,13 +38,13 @@ socket.on('it', (data) => {
     } else {
         imit = false;
     }
-    let flashIt = setInterval( function() { changeItColor() }, 100);
+    let flashIt = setInterval( function() { changeItColor(); }, 100);
     setTimeout(function() { clearInterval(flashIt); itfill = itfilla; }, 3000);
-})
+});
 
 socket.on('state', (data) => {
     state = data;
-})
+});
 
 socket.on('moved', function (data, inState) {
     //console.log("move received:");
@@ -66,7 +66,7 @@ socket.on('remove', function (data) {
     if (typeof gamePieces[data.uuid] != 'undefined') {
         delete gamePieces[data.uuid];
     }
-})
+});
 
 
 
@@ -85,19 +85,19 @@ var myGameArea = {
             myGameArea.keys = (myGameArea.keys || []);
             myGameArea.keys[e.keyCode] = true;
             
-        })
+        });
         window.addEventListener('keyup', function (e) {
             e.preventDefault();
             myGameArea.keys = (myGameArea.keys || []);
             myGameArea.keys[e.keyCode] = false;
-        })
+        });
 
         window.addEventListener('mousedown', function (e) {
             e.preventDefault();
             myGameArea.mouse = true;
             myGameArea.mouseY = e.movementY;
             myGameArea.mouseX = e.movementX;
-        })
+        });
 
         window.addEventListener('mousemove', function (e) {
             e.preventDefault();
@@ -109,31 +109,31 @@ var myGameArea = {
                 myGameArea.mouseY = e.movementY;
                 myGameArea.mouseX = e.movementX;
             }
-        })
+        });
 
         window.addEventListener('mouseup', function(e) {
             myGameArea.mouse = false;
-        })
+        });
 
         window.addEventListener('mouseout', function(e) {
             myGameArea.mouse = false;
-        })
+        });
         window.addEventListener('touchstart', function(e) {
             e.preventDefault();
             myGameArea.touch = true;
             myGameArea.touches = e.touches;
             myGameArea.changedTouches = [];
-        })
+        });
         window.addEventListener('touchmove', function(e) {
             e.preventDefault();
             myGameArea.touches = e.touches;
             myGameArea.changedTouches = e.changedTouches;
-        })
+        });
         window.addEventListener('touchend', function(e) {
             myGameArea.touch = false;
             myGameArea.touches = [];
             myGameArea.changedTouches = [];
-        })
+        });
     },
     clear: function () {
         //this.canvas.height = this.canvas.clientHeight * 0.95;
@@ -143,7 +143,7 @@ var myGameArea = {
         //console.log("w: " + width + " h: " + height);
         this.context.clearRect(0, 0, width, height);
     }
-}
+};
 
 function updateRefresh() {
     clearInterval(myGameArea.interval);
@@ -187,7 +187,7 @@ function component(width, height, color, x, y) {
         // A circle
         let radius = this.radius;
         ctx.beginPath();
-        ctx.arc(this.x,this.y,radius,0,2*Math.PI)
+        ctx.arc(this.x,this.y,radius,0,2*Math.PI);
         ctx.fillStyle = color;
         ctx.fill();
 
@@ -203,7 +203,7 @@ function component(width, height, color, x, y) {
             
             // A circle in the middle
             ctx.beginPath();
-            ctx.arc(this.x, this.y, ptf, 0, 2*Math.PI)
+            ctx.arc(this.x, this.y, ptf, 0, 2*Math.PI);
             ctx.fill();
             // A square in the middle
             //ctx.fillRect(this.x + (pieceWidth / ptf), this.y + (pieceHeight / ptf), this.width - ((
@@ -218,7 +218,7 @@ function component(width, height, color, x, y) {
             */
 
         }
-    }
+    };
     this.newPos = function () {
         if (this.x + this.speedX + pieceWidth < 0 ) {
             this.x += myGameArea.canvas.width + pieceWidth;
@@ -243,7 +243,7 @@ function component(width, height, color, x, y) {
             speedY: this.speedY,
             color: myColor
         });
-    }
+    };
 }
 
 function updateGameArea() {
@@ -252,43 +252,43 @@ function updateGameArea() {
     
     if (myGameArea.mouse) {
 
-        let mouseX = myGameArea.mouseX
-        let mouseY = myGameArea.mouseY
+        let mouseX = myGameArea.mouseX;
+        let mouseY = myGameArea.mouseY;
         //console.log("X "+mouseX + " Y " + mouseY)
 
             if (mouseX > 0) {
                 myGamePiece.speedX = 1;
             } else if (mouseX < 0) {
                 myGamePiece.speedX = -1;
-            } else { myGamePiece.speedX = 0 }
+            } else { myGamePiece.speedX = 0; }
         
             if (mouseY > 0) {
                 myGamePiece.speedY = 1;
             } else if (mouseY < 0 ) {
                 myGamePiece.speedY = -1;
-            } else { myGamePiece.speedY = 0 }
+            } else { myGamePiece.speedY = 0; }
 
         // end mouse movement checks
     } else if (myGameArea.touch) {
-        let changedTouches = myGameArea.changedTouches
+        let changedTouches = myGameArea.changedTouches;
         let oldTouchSpot = (myGameArea.oldTouchSpot || changedTouches[0]);
-        let touch = changedTouches[0]
-        let diffX = touch.pageX - oldTouchSpot.pageX
-        let diffY = touch.pageY - oldTouchSpot.pageY
-        myGameArea.oldTouchSpot = changedTouches[0]
+        let touch = changedTouches[0];
+        let diffX = touch.pageX - oldTouchSpot.pageX;
+        let diffY = touch.pageY - oldTouchSpot.pageY;
+        myGameArea.oldTouchSpot = changedTouches[0];
 
         if (diffX != 0 || diffY != 0) {
             if (diffX > 0) {
                 myGamePiece.speedX = 1; 
             } else if (diffX < 0) {
                 myGamePiece.speedX = -1;
-            }  else { myGamePiece.speedX = 0}
+            }  else { myGamePiece.speedX = 0; }
 
             if (diffY > 0 ){
                myGamePiece.speedY = 1;
             } else if (diffY < 0) {
                 myGamePiece.speedY = -1;
-            } else { myGamePiece.speedY = 0 }
+            } else { myGamePiece.speedY = 0; }
         }
 
     } else {
@@ -319,26 +319,26 @@ function updateGameArea() {
 
     // The divisor also helps determine how bouncy it is
 
-    myGamePiece.speedXDecay = Math.abs(myGamePiece.speedXDecay) < 0.01 ? 0 : myGamePiece.speedXDecay / bounceDecay
-    myGamePiece.speedYDecay = Math.abs(myGamePiece.speedYDecay) < 0.01 ? 0 : myGamePiece.speedYDecay / bounceDecay
+    myGamePiece.speedXDecay = Math.abs(myGamePiece.speedXDecay) < 0.01 ? 0 : myGamePiece.speedXDecay / bounceDecay;
+    myGamePiece.speedYDecay = Math.abs(myGamePiece.speedYDecay) < 0.01 ? 0 : myGamePiece.speedYDecay / bounceDecay;
 
-    myGamePiece.speedX += myGamePiece.speedXDecay
-    myGamePiece.speedY += myGamePiece.speedYDecay
+    myGamePiece.speedX += myGamePiece.speedXDecay;
+    myGamePiece.speedY += myGamePiece.speedYDecay;
 
     if (myGamePiece.speedX != 0 || myGamePiece.speedY != 0) {
-        myGamePiece.newPos()
+        myGamePiece.newPos();
     } 
 
     for (var uuid in gamePieces) {
         if (uuid != myUUID) {
             if (checkOverlap(myGamePiece, gamePieces[uuid])) {
-                myGamePiece.newPos()
+                myGamePiece.newPos();
                 //console.log('overlap! ' + myUUID + " - " + uuid);
                 if (imit && !myGamePiece.overlap) {
                 socket.emit('tagged', {
                     olduuid: myUUID,
                     newuuid: uuid
-                 })
+                 });
                 } 
                 
                 myGamePiece.overlap = true;
@@ -378,23 +378,23 @@ function checkOverlap(piece1, piece2) {
     */
     // This is for circle collision detection
 
-    let dx = piece1.x - piece2.x
-    let dy = piece1.y - piece2.y
-    let dx2 = piece2.x - piece1.x
-    let dy2 = piece2.y - piece1.y
+    let dx = piece1.x - piece2.x;
+    let dy = piece1.y - piece2.y;
+    let dx2 = piece2.x - piece1.x;
+    let dy2 = piece2.y - piece1.y;
     let distance = Math.sqrt(dx * dx + dy * dy);
     if (distance < piece1.radius + piece2.radius)  {
-        let atan1 = Math.atan2(dy,dx)
-        let p1deg = ((atan1 * 180 / Math.PI) + 360 + 270) % 360
-        console.log("Piece 1 loc, angle (deg): ", dx, dy,  p1deg)
-        let atan2 = Math.atan2(dy2,dx2)
-        let p2deg = ((atan2 * 180 / Math.PI) + 360 + 270) % 360
-        console.log("Piece 2 loc, angle (deg): ", dx2, dy2, p2deg)
+        let atan1 = Math.atan2(dy,dx);
+        let p1deg = ((atan1 * 180 / Math.PI) + 360 + 270) % 360;
+        console.log("Piece 1 loc, angle (deg): ", dx, dy,  p1deg);
+        let atan2 = Math.atan2(dy2,dx2);
+        let p2deg = ((atan2 * 180 / Math.PI) + 360 + 270) % 360;
+        console.log("Piece 2 loc, angle (deg): ", dx2, dy2, p2deg);
 
-        let xAvg = (Math.abs(piece1.speedX) + Math.abs(piece2.speedX)) / 2
-        let yAvg = (Math.abs(piece1.speedY) + Math.abs(piece2.speedY)) / 2
+        let xAvg = (Math.abs(piece1.speedX) + Math.abs(piece2.speedX)) / 2;
+        let yAvg = (Math.abs(piece1.speedY) + Math.abs(piece2.speedY)) / 2;
 
-        console.log("Averages: ", xAvg, yAvg)
+        console.log("Averages: ", xAvg, yAvg);
         /*
         piece1.speedX = piece1.speedX == 0 ? Math.sign(dx * -1) : piece1.speedX
         piece1.speedY = piece1.speedY == 0 ? Math.sign(dy) : piece1.speedY
@@ -404,13 +404,13 @@ function checkOverlap(piece1, piece2) {
         // sign = direction of travel
         // sign * x = x is bounciness
         // Add sign again to keep from overlapping
-         piece1.speedXDecay =  xAvg  * Math.sign(dx) * bounceStart + Math.sign(dx)
-         piece1.speedYDecay =  yAvg  * Math.sign(dy) * bounceStart + Math.sign(dy)
+         piece1.speedXDecay =  xAvg  * Math.sign(dx) * bounceStart + Math.sign(dx);
+         piece1.speedYDecay =  yAvg  * Math.sign(dy) * bounceStart + Math.sign(dy);
        
-        console.log("Speed Decay: ", parseFloat(piece1.speedXDecay), parseFloat(piece1.speedYDecay))
-        return true
+        console.log("Speed Decay: ", parseFloat(piece1.speedXDecay), parseFloat(piece1.speedYDecay));
+        return true;
     } else { 
-        return false
+        return false;
     }
 }
 
@@ -434,7 +434,7 @@ function getRandomColor() {
 
 function getRandomInt(max, min) {
     if (min == null || min == undefined) {
-        min = 0
+        min = 0;
     }
-    return Math.floor(Math.random() * Math.floor(max - min) + min)
+    return Math.floor(Math.random() * Math.floor(max - min) + min);
 }
