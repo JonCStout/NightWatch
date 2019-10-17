@@ -2,36 +2,43 @@
 const io = require('socket.io')();
 const port = process.env.PORT || 3000;
 
-var whosit;
+// var whosIt;
 //var gamepieces = {};
 var taggable = true;
-var clearTaggable;
+// var clearTaggable;
 var state = {
-	aBox: { x: 200, y:200, color: "#0000ff" }  // initial values, #0000ff = blue.  "blue" also works
+	aBox: { x: 200, y:200, color: "#0000ff" },  // initial values, #0000ff = blue.  "blue" also works
+	whosIt: undefined
 };
 
 function onConnection(socket) {
+	// initialization for a new socket connection
 	console.log('Connection received: ' + socket.request.connection.remoteAddress + ", port:" + socket.request.connection.remotePort);
-	socket.broadcast.emit('announce', {} )
+	socket.broadcast.emit('announce', {} );
 
-	if (whosit) {
-		socket.emit('it', { "uuid": whosit } )
+	if (state.whosIt) {
+		socket.emit('it', { "uuid": state.whosIt } );
 	}
 
 	socket.emit('state', state);  // send initial state
 
-	socket.on('move', (data) => { // register a callback function for when a move event is received
+
+	// register callback functions for when network events are received
+	socket.on('move', (data) => {
+		// === State Management ===
 		state.aBox.color = data.color;  // change color depending on who sent the move event
-		// socket.emit("state", state);  // update state for this socket (the sender of move)
-		// socket.broadcast.emit("state", state);  // update state for all other sockets
-		socket.broadcast.emit('moved', data, state);
-		socket.emit('moved', data, state);
+
+		// === Send network updates ===
+		socket.broadcast.emit('moved', data, state);  // update movement AND state for all other sockets
+		socket.emit('state', state);  // update state for this socket (the sender of move)
+		
 		socket.userid = data.uuid;
+		
 		// determine who's it
-		if (!whosit) { 
-			whosit = data.uuid; 
-			io.emit('it', { "uuid": whosit } )
-			//socket.broadcast.emit('it', { "uuid": whosit } )
+		if (!state.whosIt) {
+			state.whosIt = data.uuid; 
+			io.emit('it', { "uuid": state.whosIt } );
+			//socket.broadcast.emit('it', { "uuid": state.whosit } )
 		} 
 	    //console.log('move received: ');
 		//console.log(data);
@@ -41,17 +48,18 @@ function onConnection(socket) {
 	socket.on('tagged', (data) => {
 		if (data.olduuid && data.newuuid && getTaggable()) {
 			setTaggable(false);
-			whosit = data.newuuid; 
+			state.whosIt = data.newuuid; 
 			io.emit('it', { "uuid" : data.newuuid })
 			setTimeout(function() { setTaggable(true); },3000);
 		}
-	})
+	});
 
 	socket.on('disconnect', () => {
-		if (whosit == socket.userid) { whosit = undefined }
-		socket.broadcast.emit('remove', { "uuid" : socket.userid })
+		if (state.whosIt == socket.userid) { state.whosIt = undefined; }
+		socket.broadcast.emit('remove', { "uuid" : socket.userid });
+		console.log('Client disconnected: ' + socket.request.connection.remoteAddress + ", port:" + socket.request.connection.remotePort);
 	});
-};
+}
 
 function getTaggable() {
 	return taggable;
