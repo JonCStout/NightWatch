@@ -1,26 +1,26 @@
-//var myGamePiece;
+//let myGamePiece;
 let myUUID = uuidv4();
-var gamePieces = {};
+let gamePieces = {};
 let myColor = getRandomColor();
-var itUUID;
-let imit = false;
+let itUUID;
+let imIt = false;
 let pieceWidth = 30;
 let pieceHeight = 30;
 let itfilla = '#aa0000';
 let itfillb = '#99ff00';
-var itfill = itfilla;
-var state;
+let itfill = itfilla;
+let state;
 
 // Decay should be higher than start
 const bounceDecay = 1.05; // 1 or more: the higher, the less bounce; less than one adds infinite spring
 const bounceStart = 1.05; // 1 or more; the higher, the more it should bounce
 
 
-var socket = io('http://localhost:3000'); // for localhost testing
-//var socket = io('https://nightwatch-server.now.sh')
+let socket = io('http://localhost:3000'); // for localhost testing
+//let socket = io('https://nightwatch-server.now.sh')
 socket.on('announce', () => {
     //console.log("announce received")
-    var myGamePiece = gamePieces[myUUID];
+    let myGamePiece = gamePieces[myUUID];
     socket.emit('move', {
         uuid: myUUID,
         x: myGamePiece.x,
@@ -34,9 +34,9 @@ socket.on('it', (data) => {
     //console.log('Got it data: ', data)
     itUUID = data.uuid;
     if (itUUID == myUUID) { // I'm it!
-        imit = true;
+        imIt = true;
     } else {
-        imit = false;
+        imIt = false;
     }
     let flashIt = setInterval( function() { changeItColor(); }, 100);
     setTimeout(function() { clearInterval(flashIt); itfill = itfilla; }, 3000);
@@ -70,7 +70,7 @@ socket.on('remove', function (data) {
 
 
 
-var myGameArea = {
+let myGameArea = {
     canvas: document.createElement("canvas"),
     start: function () {
         this.canvas.width = 1280;
@@ -248,7 +248,7 @@ function component(width, height, color, x, y) {
 
 function updateGameArea() {
     myGameArea.clear();
-    var myGamePiece = gamePieces[myUUID];
+    let myGamePiece = gamePieces[myUUID];
     
     if (myGameArea.mouse) {
 
@@ -329,12 +329,12 @@ function updateGameArea() {
         myGamePiece.newPos();
     } 
 
-    for (var uuid in gamePieces) {
+    for (let uuid in gamePieces) {
         if (uuid != myUUID) {
             if (checkOverlap(myGamePiece, gamePieces[uuid])) {
                 myGamePiece.newPos();
                 //console.log('overlap! ' + myUUID + " - " + uuid);
-                if (imit && !myGamePiece.overlap) {
+                if (imIt && !myGamePiece.overlap) {
                 socket.emit('tagged', {
                     olduuid: myUUID,
                     newuuid: uuid
@@ -417,16 +417,16 @@ function checkOverlap(piece1, piece2) {
 
 function uuidv4() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        var r = Math.random() * 16 | 0,
+        let r = Math.random() * 16 | 0,
             v = c == 'x' ? r : (r & 0x3 | 0x8);
         return v.toString(16);
     });
 }
 
 function getRandomColor() {
-    var letters = '0123456789ABCDEF';
-    var color = '#';
-    for (var i = 0; i < 6; i++) {
+    let letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
         color += letters[Math.floor(Math.random() * 16)];
     }
     return color;  // #abcdef, #123456, #ff00ff
